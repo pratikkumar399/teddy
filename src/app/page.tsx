@@ -7,8 +7,6 @@ export default function Home() {
   const [isTalking, setIsTalking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("Click on me. I want to say something.");
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [poemTopic, setPoemTopic] = useState('');
 
   const messages = [
     "I'm so sorry...",
@@ -28,12 +26,12 @@ export default function Home() {
   ];
 
 
-  const speak = (text) => {
+  const speak = (text: string) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.pitch = 1.5;
-      utterance.rate = 0.9;
+      utterance.pitch =1;
+      utterance.rate = 0.8;
       utterance.volume = 1;
       utterance.onstart = () => setIsTalking(true);
       utterance.onend = () => setIsTalking(false);
@@ -52,53 +50,7 @@ export default function Home() {
     speak(randomMessage);
   };
 
-  const generatePoem = async () => {
-    if (!poemTopic.trim()) {
-      setMessage("Please tell me what to write about!");
-      return;
-    }
-    setShowPrompt(false);
-    setIsLoading(true);
-    setMessage("Let me think of the perfect words...");
 
-    const prompt = `You are a cute, cuddly teddy bear. Write a short, sweet, and sincere 4-line apology poem for my girlfriend about: "${poemTopic}".`;
-    
-    try {
-      const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-      const payload = { contents: chatHistory };
-      const apiKey = ""; 
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const result = await response.json();
-      
-      if (result.candidates && result.candidates.length > 0 &&
-          result.candidates[0].content && result.candidates[0].content.parts &&
-          result.candidates[0].content.parts.length > 0) {
-        const text = result.candidates[0].content.parts[0].text;
-        setMessage(text);
-        speak(text);
-      } else {
-        throw new Error("Unexpected API response format.");
-      }
-
-    } catch (error) {
-      console.error("Error generating poem:", error);
-      setMessage("I'm having trouble finding my words... Please try again.");
-    } finally {
-      setIsLoading(false);
-      setPoemTopic('');
-    }
-  };
 
 
 
@@ -158,7 +110,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#FFF0F5] flex flex-col items-center justify-center font-sans p-4 overflow-hidden">
       <div className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-[#d16a8a] mb-2" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
-          I'm Really Sorry...
+          I&apos;m Really Sorry...
         </h1>
         <p className="text-lg text-[#b85a77]">This little bear has something to say.</p>
       </div>
@@ -166,7 +118,7 @@ export default function Home() {
       <div className="relative mb-20">
         <TeddyBear />
         <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-72 bg-white p-4 rounded-xl shadow-lg text-center">
-            <p className="text-gray-700 italic whitespace-pre-wrap">"{message}"</p>
+            <p className="text-gray-700 italic whitespace-pre-wrap">{message}</p>
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-white"></div>
         </div>
       </div>
@@ -180,7 +132,7 @@ export default function Home() {
       </button> */}
 
 
-      {showPrompt && (
+      {/* {showPrompt && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-2xl shadow-2xl w-96 text-center">
             <h2 className="text-2xl font-bold text-[#d16a8a] mb-4">What should the poem be about?</h2>
@@ -198,7 +150,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       <footer className="absolute bottom-4 text-center text-[#b85a77] text-sm">
         <p>Made with love, just for you.</p>
